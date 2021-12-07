@@ -20,20 +20,21 @@ with input as (
   select age, count(age) from fish group by age
 ) update ages set count = input.count from input where ages.age = input.age;
 
-select * from ages order by age;
-
-create or replace function daystep() returns real as $$
+create or replace function daystep(int) returns bigint as $$
 begin
-  for i in 1..256 loop
+  for i in 1..$1 loop
     update ages set age = age - 1;
     update ages set count = coalesce((select count from ages where age = -1),0) + count where age = 6;
     update ages set age = 8 where age = -1;
   end loop;
-  return 0;
+  return (
+    select sum(count) as part1 from ages
+  );
 end
 $$ language plpgsql;
 
-select daystep();
+-- Part 1: 388419 lanternfish
+select daystep(80) as part1;
 
-select * from ages order by age;
-select sum(count) from ages;
+-- Part 2: 1740449478328 lanternfish! :)
+select daystep(256-80) as part2;
