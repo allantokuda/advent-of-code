@@ -24,7 +24,7 @@ create or replace function daystep(int) returns bigint as $$
 begin
   for i in 1..$1 loop
     update ages set age = age - 1;
-    update ages set count = coalesce((select count from ages where age = -1),0) + count where age = 6;
+    update ages set count = count + (select count from ages where age = -1) where age = 6;
     update ages set age = 8 where age = -1;
   end loop;
   return (
