@@ -11,10 +11,10 @@ def binary_search(vals, dist_function)
   min = vals.first
   max = vals.last
   while max > min
-    tests = (0..4).map { |i| (min + (max - min) * i / 4.0).round }
+    tests = (0..2).map { |i| (min + (max - min) * i / 2.0).round }
     results = tests.map { |t| [t, totalcost(t, vals, dist_function)] }.uniq
-    best3 = results.sort_by(&:last)[0..-2].sort
-    min, max, value = best3.first.first, best3.last.first, best3.first.last
+    best = results.sort_by(&:last)[0..-2].sort # remove the worst score of the set (usually 3 until the end)
+    min, max, value = best.first.first, best.last.first, best.first.last
   end
   value
 end
