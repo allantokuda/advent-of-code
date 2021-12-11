@@ -1,36 +1,34 @@
-$language = <<-STR.split("\n").map { |line| line.split.yield_self { |a| { open: a[0], close: a[1], value: a[2].to_i } } }
-( ) 3
-[ ] 57
-{ } 1197
-< > 25137
-STR
+lines = File.read(ARGV[0]).split("\n")
 
-$openings = $language.map { |pair| pair[:open] }
-$closings = Hash[$language.map { |pair| [pair[:close], pair[:open]] }]
-$scorings = Hash[$language.map { |pair| [pair[:close], pair[:value]] }]
+$pairs = Hash[['()', '[]', '{}', '<>'].map { |pair| pair.chars }]
 
-def line_error(line)
+$error_scorings = { ')' => 3, ']' => 57, '}' => 1197, '>' => 25137 }
+$comp_scorings = { ')' => 1, ']' => 2, '}' => 3, '>' => 4 }
+
+def parse(line)
   stack = []
-  score = 0
+  error_score = 0
   line.chars.each do |char|
-    if $openings.include?(char)
+    if $pairs.keys.include?(char)
       stack.push(char)
       nil
-    elsif $closings.keys.include?(char)
-      if $closings[char] == stack.last
+    elsif $pairs.values.include?(char)
+      if char == $pairs[stack.last]
         stack.pop
         nil
       else
-        score = $scorings[char]
-        break
+        return [$error_scorings[char], nil]
       end
     end
   end
-  score
+  completion_score = stack.reverse.map { |c| $pairs[c] }.inject(0) { |res, char| res * 5 + $comp_scorings[char] }
+  [nil, completion_score]
 end
 
-lines = File.read(ARGV[0]).split("\n")
-scores = lines.map do |line|
-  line_error(line)
-end
-puts scores.sum
+results = lines.map { |line| parse(line) }
+
+# Part 1
+puts results.map(&:first).compact.sum
+
+# Part 2
+puts results.map(&:last).compact.sort.yield_self { |r| r[r.count/2] }
