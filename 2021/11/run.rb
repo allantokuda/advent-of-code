@@ -47,7 +47,7 @@ class OctopusFlashMapper
 
   def pretty
     (0...length).map do |i|
-      grid[i].join(' ')
+      grid[i].map { |v| '0 ⠄⠄⠆⠦⠶⠷⠿⡿⣿'[v] }.join(' ')
     end.join("\n") + "\n\n"
   end
 
@@ -59,11 +59,21 @@ end
 mapper = OctopusFlashMapper.new
 mapper.load(ARGV[0])
 
+# Part 1 solution
 100.times { mapper.step }
-puts mapper.flash_count
 
+# Part 2 solution
+puts mapper.flash_count
 until mapper.all_flashed?
   mapper.step
 end
-
 puts mapper.step_num
+
+# Animate another copy
+mapper = OctopusFlashMapper.new
+mapper.load(ARGV[0])
+until mapper.all_flashed?
+  mapper.step
+  puts mapper.pretty
+  sleep 0.1
+end
