@@ -1,13 +1,14 @@
 require 'ostruct'
 
 class OctopusFlashMapper
-  attr_reader :width, :length, :grid, :flash_count
+  attr_reader :width, :length, :grid, :flash_count, :step_num
 
   def load(file)
     @grid = File.read(file).split("\n").map { |line| line.chars.map { |c| c.to_i } }
     @length = @grid.count
     @width = @grid.first.count
     @flash_count = 0
+    @step_num = 0
   end
 
   def apply
@@ -28,6 +29,7 @@ class OctopusFlashMapper
   end
 
   def step
+    @step_num += 1
     apply { |i,j| grid[i][j] += 1 }
     apply { |i,j| flash(i, j) }
   end
@@ -48,6 +50,10 @@ class OctopusFlashMapper
       grid[i].join(' ')
     end.join("\n") + "\n\n"
   end
+
+  def all_flashed?
+    @grid.flatten.uniq == [0]
+  end
 end
 
 mapper = OctopusFlashMapper.new
@@ -55,3 +61,9 @@ mapper.load(ARGV[0])
 
 100.times { mapper.step }
 puts mapper.flash_count
+
+until mapper.all_flashed?
+  mapper.step
+end
+
+puts mapper.step_num
