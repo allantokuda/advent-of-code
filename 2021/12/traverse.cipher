@@ -1,0 +1,33 @@
+// Replace each Small Cave with a one-way path
+match (c:SmallCave)
+create (en:CaveEntry { name: c.name }),
+       (ex:CaveExit { name: c.name }),
+       (c)-[:replace]->(en),
+       (en)-[:oneway]->(ex);
+
+// Connect entries and exits to related nodes, one direction
+match (x1)<-[:oneway]-(e1)<-[:replace]-(c1:SmallCave)
+      -[:path]->
+      (c2:SmallCave)-[:replace]->(e2)-[:oneway]->(x2)
+create (x1)-[:path]->(e2),
+       (x2)-[:path]->(e1);
+
+match (c1:BigCave)-[:path]-
+      (c2:SmallCave)-[:replace]->(e2)-[:oneway]->(x2)
+create (c1)-[:path]->(e2),
+       (x2)-[:path]->(c1);
+
+match (s:Start)-[:path]-(c2:SmallCave)-[:replace]->(e2)
+create (s)-[:path]->(e2);
+
+match (s:End)-[:path]-(c2:SmallCave)-[:replace]->(e2)-[:oneway]->(x2)
+create (s)<-[:path]-(x2);
+
+// Delete original Small Caves
+match (n:SmallCave) detach delete n;
+
+// Part 1: count of possible paths
+match p = (a:Start)-[*]->(b:End) return count(p);
+
+// (Debug)
+match p = (a:Start)-[*]->(b:End) return [n in nodes(p) | n.name];
