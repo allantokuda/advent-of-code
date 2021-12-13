@@ -1,3 +1,4 @@
+match (n) detach delete n;
 CREATE(dc:SmallCave {name: 'dc'}),
 (end:End {name: 'end'}),
 (HN:BigCave {name: 'HN'}),

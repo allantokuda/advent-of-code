@@ -1,13 +1,1 @@
-CREATE(start:Start {name: 'start'}),
-(A:BigCave {name: 'A'}),
-(b:SmallCave {name: 'b'}),
-(c:SmallCave {name: 'c'}),
-(d:SmallCave {name: 'd'}),
-(end:End {name: 'end'}),
-(start)-[:path]->(A),
-(start)-[:path]->(b),
-(A)-[:path]->(c),
-(A)-[:path]->(b),
-(b)-[:path]->(d),
-(A)-[:path]->(end),
-(b)-[:path]->(end);
+match (n) detach delete n; CREATE(start:Start {name: 'start'}), (A:Big:Cave {name: 'A'}), (b:Small:Cave {name: 'b'}), (c:Small:Cave {name: 'c'}), (d:Small:Cave {name: 'd'}), (end:End {name: 'end'}), (start)-[:path]->(A), (start)-[:path]->(b), (A)-[:path]->(c), (A)-[:path]->(b), (b)-[:path]->(d), (A)-[:path]->(end), (b)-[:path]->(end);

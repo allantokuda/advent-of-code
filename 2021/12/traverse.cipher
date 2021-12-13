@@ -30,4 +30,22 @@ match (n:SmallCave) detach delete n;
 match p = (a:Start)-[*]->(b:End) return count(p);
 
 // (Debug)
-match p = (a:Start)-[*]->(b:End) return [n in nodes(p) | n.name];
+match p = (a:Start)-[r*]->(b:End) return [n in nodes(p) | n.name];
+match p = (a:Start)-[r*]->(b:End) return [rr in r | type(rr)];
+
+// Part 2: add a 2nd path through each Small Cave
+
+// This seems like it would work, but takes wayyy too long. The nested * loop must be the issue.
+match (e)-[:oneway]->(x) create (e)-[:second]->(x);
+match p = (a:Start)-[r1:path|oneway*]->(n)-[r2:second]->(m)-[r3:path|oneway*]->(b:End) return count(p);
+match p = (a:Start)-[r1:path|oneway*]->(n)-[r2:second]->(m)-[r3:path|oneway*]->(b:End) return p;
+
+// REVERT...
+match (e)-[r:second]->(x) delete r;
+
+// One at a time:
+match (e { name: 'b'})-[:oneway]->(x) create (e)-[:second]->(x);
+
+
+// any node can repeat
+match p = (a:Start)-[*]-(b:End) return nodes(p);

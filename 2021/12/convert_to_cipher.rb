@@ -2,7 +2,7 @@ paths = File.readlines(ARGV[0], chomp: true).map { |line| line.split('-') }
 
 class String
   def is_big?
-    self[0] == self[0].upcase
+    self == self.capitalize
   end
 end
 
