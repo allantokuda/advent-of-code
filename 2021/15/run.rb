@@ -5,17 +5,12 @@ grid = File.read(ARGV[0]).split("\n").map { |line| line.chars.map(&:to_i) }
 
 
 class Node
-  attr_accessor :row_num, :col_num, :path, :node_risk, :total_risk, :closed
+  attr_accessor :row_num, :col_num, :path, :node_risk, :total_risk
 
   def initialize(row_num, col_num, node_risk)
     @node_risk = node_risk
-    @closed = false
     @row_num = row_num
     @col_num = col_num
-  end
-
-  def close!
-    closed = true
   end
 
   def adjacent_nodes(grid)
@@ -55,7 +50,6 @@ open_nodes = [start_node]
 closed_nodes = []
 while(end_node.total_risk.nil?)
   n = open_nodes.sort_by(&:total_risk).first # nearest open node
-  n.close!
   adj = n.adjacent_nodes(node_grid)
   adj.map { |a| a.set_source(n) }
   closed_nodes += [n]
