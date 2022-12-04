@@ -10,9 +10,9 @@
 ; Data intake and structuring
 (def filedata (slurp (first *command-line-args*)))
 (def pairs (split_map #"\n" filedata
-          (fn [line] (sort-by count (split_map #"," line
-           (fn [range_str] (set (inclusive_range (split_map #"-" range_str
-             #(Integer/parseInt %))))))))))
+             (fn [line] (sort-by count (split_map #"," line
+               (fn [range_str] (set (inclusive_range (split_map #"-" range_str
+                 #(Integer/parseInt %))))))))))
 
 ; Part 1
 (defn full_overlap [pair] (if (empty? (apply difference pair)) 1 0))
