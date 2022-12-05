@@ -22,14 +22,23 @@ stack_count.times do |stack_num|
   stacks << stack
 end
 
+stacks1 = stacks.map(&:dup)
+stacks2 = stacks.map(&:dup)
+
 # Part 1
 moves.each do |move|
   move[:num].times do
-    from = stacks[move[:from]-1]
-    to   = stacks[move[:to  ]-1]
+    from = stacks1[move[:from]-1]
+    to   = stacks1[move[:to  ]-1]
     to.push(from.pop)
   end
 end
-puts stacks.map { |s| s.last }.join
+puts stacks1.map { |s| s.last }.join
 
 # Part 2
+moves.each do |move|
+  from = stacks2[move[:from]-1]
+  to   = stacks2[move[:to  ]-1]
+  to.push(*from.pop(move[:num]))
+end
+puts stacks2.map { |s| s.last }.join
