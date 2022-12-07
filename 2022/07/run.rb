@@ -1,4 +1,4 @@
-dirs = { ['/'] => 0 }
+dirs = { [:root] => 0 }
 current_path = []
 
 ARGF.read.split("\n").each do |line|
@@ -6,7 +6,7 @@ ARGF.read.split("\n").each do |line|
   when /\$ cd (.+)/
     dirname = $1
     case dirname
-    when '/' then current_path = ['/']
+    when '/' then current_path = [:root]
     when '..' then current_path.pop
     else current_path.push(dirname)
     end
@@ -35,5 +35,5 @@ puts sizes.select { |s| s <= 100000 }.sum
 
 # Part 2:
 # amount occupied plus system update requirement minus total disk size
-amount_to_delete = dirs[['/']] + 30000000 - 70000000
+amount_to_delete = dirs[[:root]] + 30000000 - 70000000
 puts sizes.select { |s| s >= amount_to_delete }.min
