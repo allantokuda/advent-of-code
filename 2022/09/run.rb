@@ -1,10 +1,13 @@
 require "matrix"
 
-movements = ARGF.read.split("\n").map(&:split)
+# Usage:
+#   ruby run.rb test 2   # part 1
+#   ruby run.rb test 10  # part 2
 
-head = Vector[0,0]
-tail = Vector[0,0]
+movements = File.read(ARGV[0]).split("\n").map(&:split)
+length = ARGV[1].to_i
 
+rope = Array.new(length) { { :v => Vector[0,0] } }
 tail_trail = []
 
 VECTOR = {
@@ -14,17 +17,18 @@ VECTOR = {
   'D' => Vector[ 0,-1]
 }
 
-movements.each do |direction, distance|
+trail = movements.map do |direction, distance|
   vector = VECTOR[direction]
   distance.to_i.times do
-    head += vector
-    dist = head - tail
-    if (components = dist.to_a).map(&:abs).max > 1
-      tail += Vector[*components.map { |n| n == 0 ? 0 : n / n.abs }]
+    rope.first[:v] += vector
+    rope.each_cons(2) do |lead, follow|
+      dist = lead[:v] - follow[:v]
+      if (components = dist.to_a).map(&:abs).max > 1
+        follow[:v] += Vector[*components.map { |n| n == 0 ? 0 : n / n.abs }]
+      end
     end
-    tail_trail << tail
+    tail_trail << rope.last[:v]
   end
-end
+end.uniq
 
-# Part 1
 puts tail_trail.uniq.count
