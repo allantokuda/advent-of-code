@@ -19,5 +19,15 @@ while commands.any? || cooldown > 0
   i += 1
 end
 
+# Part 1
 keypoints = (0..5).map { |n| 20 + n*40 }
 puts keypoints.map { |k| history[k-1].values.inject(:*) }.sum
+
+# Part 2
+WIDTH = 40
+puts
+puts begin
+  history.map do |h|
+    ((h[:i]-1) % WIDTH - h[:x]).abs <= 1 ? '#' : '.'
+  end.each_slice(WIDTH).map(&:join)
+end
