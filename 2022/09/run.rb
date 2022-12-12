@@ -3,9 +3,10 @@ require "matrix"
 # Usage:
 #   ruby run.rb test 2   # part 1
 #   ruby run.rb test 10  # part 2
+#   ruby run.rb test 10 animate  # add animation
 
 movements = File.read(ARGV[0]).split("\n").map(&:split)
-rope_length = ARGV[1].to_i
+rope_length = (ARGV[1] || 2).to_i # default to length 2 for part 1 result
 
 DIRECTION_MAP = {
   'R' => Vector[ 1, 0],
@@ -16,6 +17,17 @@ DIRECTION_MAP = {
 
 rope = Array.new(rope_length) { { :pos => Vector[0,0] } }
 tail_trail = []
+
+def animate_rope(rope, width, height)
+  xvals, yvals = rope.map { |knot| knot[:pos].to_a }.transpose
+  grid = (0...height).map do |y|
+    ' .'*width
+  end
+  rope.reverse.each_with_index { |knot, i| x,y = knot[:pos].to_a; begin; grid[y-height/2][x*2-width+1] = (rope.count - i - 1).to_s; rescue; break; end }
+  puts grid
+  8.times { puts }
+  sleep 0.05
+end
 
 movements.map do |direction_code, step_count|
   vector = DIRECTION_MAP[direction_code]
@@ -33,6 +45,7 @@ movements.map do |direction_code, step_count|
       end
     end
     tail_trail << rope.last[:pos]
+    animate_rope(rope, 40, 30) if ARGV[2] == 'animate'
   end
 end
 
