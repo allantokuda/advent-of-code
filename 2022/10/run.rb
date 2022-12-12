@@ -28,6 +28,6 @@ WIDTH = 40
 puts
 puts begin
   history.map do |h|
-    ((h[:i]-1) % WIDTH - h[:x]).abs <= 1 ? '#' : '.'
-  end.each_slice(WIDTH).map(&:join)
+    ((h[:i]-1) % WIDTH - h[:x]).abs <= 1 ? '#' : ' '
+  end.each_slice(WIDTH).map {|c| c.join(' ') }
 end
