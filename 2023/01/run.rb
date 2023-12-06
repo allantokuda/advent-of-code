@@ -17,6 +17,6 @@ number_words = {
 # (?= ) is a lookahead allowing overlapping matches
 regex = /(?=(#{number_words.keys.join('|')}))/
 
-puts lines.map { |line| line.scan(regex).flatten.map { |item| number_words[item] } }
+puts lines.map { |line| line.scan(regex).flatten.map(&number_words) }
           .map(&digit_pair_to_number)
           .sum
