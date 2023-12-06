@@ -1,9 +1,11 @@
 lines = ARGF.read.split("\n")
 
+digit_pair_to_number = ->(digit_pair) { digit_pair.first * 10 + digit_pair.last }
+
 # Part 1
-digit_lines = lines.map { |line| line.scan(/[0-9]/).map(&:to_i) }
-numbers = digit_lines.map { |digit_line| digit_line.first * 10 + digit_line.last }
-puts numbers.sum
+puts lines.map { |line| line.scan(/[0-9]/).map(&:to_i) }
+          .map(&digit_pair_to_number)
+          .sum
 
 # Part 2
 number_words = {
@@ -14,6 +16,7 @@ number_words = {
 # convert to regex and then use hash above to look up integer value.
 # (?= ) is a lookahead allowing overlapping matches
 regex = /(?=(#{number_words.keys.join('|')}))/
-digit_lines = lines.map { |line| line.scan(regex).flatten.map { |item| number_words[item] } }
-numbers = digit_lines.map { |digit_line| digit_line.first * 10 + digit_line.last }
-puts numbers.sum
+
+puts lines.map { |line| line.scan(regex).flatten.map { |item| number_words[item] } }
+          .map(&digit_pair_to_number)
+          .sum
