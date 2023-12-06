@@ -15,11 +15,10 @@ games = ARGF.read.split("\n").map do |line|
   end
 end
 
-# Part 1
-
+# Part 1: find games with impossible rounds, given a known set of cubes of each color,
+# representing the answer as a sum of game numbers
 actual_counts = { 'red' => 12, 'green' => 13, 'blue' => 14 }
-
-puts (
+puts begin
   games.reject do |game_number, rounds|
     rounds.any? do |round|
       round.any? do |color, count|
@@ -27,4 +26,16 @@ puts (
       end
     end
   end.map(&:first).sum
-)
+end
+
+# Part 2: find minimum number of cubes of each color were present in each game.
+# representing the answer as a sum of products
+puts begin
+  games.sum do |game_number, rounds|
+    %w[red green blue].map do |color|
+      rounds.map do |round|
+        round[color] || 0
+      end.max
+    end.inject(:*)
+  end
+end
