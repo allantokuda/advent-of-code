@@ -1,4 +1,14 @@
 filedata = ARGF.read
+file_lines = filedata.split("\n")
+
+def substring_positions(string, substring)
+  positions = []
+  offset = -1
+  while offset = string.index(substring, offset+1)
+    positions << offset
+  end
+  positions
+end
 
 # Index the locations of all numbers and symbols in the schematic
 numbers_index = []
