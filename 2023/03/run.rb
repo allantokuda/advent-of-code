@@ -14,13 +14,14 @@ end
 numbers_index = []
 symbols_index = []
 file_lines.each_with_index do |row, i|
-  row.scan(/\d{1,3}/).each do |number|
-    substring_positions(row, number).each do |j|
+  row.scan(/\d{1,3}/).uniq.each do |number|
+    bounded_number = Regexp.new("\\b#{number}\\b")
+    substring_positions(row, bounded_number).each do |j|
       numbers_index << [i, j, j+number.length-1, number.to_i]
       # numbers_index << { row: i, col_start: j, col_end: j+number.length-1, number: number.to_i }
     end
   end
-  row.scan(/[-+*\/=%@#&$]/).each do |symbol|
+  row.scan(/[-+*\/=%@#&\$]/).uniq.each do |symbol|
     substring_positions(row, symbol).each do |j|
       symbols_index << [i, j, symbol]
       #symbols_index << { row: i, col: j, symbol: symbol }
