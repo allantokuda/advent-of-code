@@ -1,34 +1,46 @@
-schematic = ARGF.read.split("\n").map { |line| line.split('') }
-symbols = %w[* @ / & % + # = - $]
+filedata = ARGF.read
 
-# duplicate array of arrays but all spaces, for painting copies of active numbers as they are found
-duplicate = schematic.map { |row| row.map { |col| ' ' } }
-
-def copy_to_duplicate_if_numeric_and_not_already_found(schematic, duplicate, row_index, col_index)
-  item = schematic[row_index][col_index]
-  if item && item.match(/\d/) && duplicate[row_index][col_index] == ' '
-    duplicate[row_index][col_index] = item
-    copy_to_duplicate_if_numeric_and_not_already_found(schematic, duplicate, row_index, col_index - 1)
-    copy_to_duplicate_if_numeric_and_not_already_found(schematic, duplicate, row_index, col_index + 1)
+# Index the locations of all numbers and symbols in the schematic
+numbers_index = []
+symbols_index = []
+file_lines.each_with_index do |row, i|
+  row.scan(/\d{1,3}/).each do |number|
+    substring_positions(row, number).each do |j|
+      numbers_index << [i, j, j+number.length-1, number.to_i]
+      # numbers_index << { row: i, col_start: j, col_end: j+number.length-1, number: number.to_i }
+    end
   end
-end
-
-schematic.each_with_index do |row, row_index|
-  row.each_with_index do |symbol, col_index|
-    if symbols.include?(symbol)
-      [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]].each do |offset|
-        offset_row = row_index + offset[0]
-        offset_col = col_index + offset[1]
-        if offset_row >= 0 && offset_row < schematic.length && offset_col >= 0 && offset_col < row.length
-          item = schematic[offset_row][offset_col]
-          if item.match(/\d/)
-            copy_to_duplicate_if_numeric_and_not_already_found(schematic, duplicate, offset_row, offset_col)
-          end
-        end
-      end
+  row.scan(/[-+*\/=%@#&$]/).each do |symbol|
+    substring_positions(row, symbol).each do |j|
+      symbols_index << [i, j, symbol]
+      #symbols_index << { row: i, col: j, symbol: symbol }
     end
   end
 end
 
-# sum all numbers across all rows
-puts duplicate.map { |row| row.join('') }.join("\n").scan(/\d+/).map(&:to_i).inject(:+)
+def number_symbol_adjacent(number, symbol)
+  (symbol[0] - number[0]).abs <= 1 &&
+    symbol[1] >= number[1] - 1 &&
+    symbol[1] <= number[2] + 1
+end
+
+# Part 1: find all numbers adjacent (including diagonally) to any symbol
+puts begin
+  numbers_index.select do |number|
+    symbols_index.any? do |symbol|
+      number_symbol_adjacent(number, symbol)
+    end
+  end.sum(&:last)
+end
+
+# Part 2: find all pairs of numbers adjacent to an asterisk where they are the only two numbers adjacent to the asterisk
+puts begin
+  stars = symbols_index.select { |symbol| symbol.last == '*' }
+  stars.map do |symbol|
+    adjacent_numbers = numbers_index.select do |number|
+      number_symbol_adjacent(number, symbol)
+    end
+    next unless adjacent_numbers.length == 2
+    adjacent_numbers.map(&:last).inject(:*)
+  end.compact.sum
+end
